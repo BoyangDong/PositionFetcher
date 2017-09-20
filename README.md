@@ -7,10 +7,13 @@
 Fetch position files from Budo Clearing Firm sftp site and dump on a VM. The script is triggered at 6am on a daily basis. 
 
 ### How to Run ###
-* Run Local
+* Run Local 
 Before running manually, make sure the scripts reside under the same directory. It can be fired off by, 
 
-    `> python Position_Fetcher.py `
+    `> python Position_Dumper.py `
+
+Make sure the local folder directory is changed based on where the files will be under. 
+
 
 * Task Scheduler 
 
