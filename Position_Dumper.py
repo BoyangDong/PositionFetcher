@@ -13,9 +13,9 @@ from ftplib import FTP
 yesterday = dt.datetime.now() - dt.timedelta( days = 1 )
 dates = yesterday.strftime( '%Y%m%d' )
 today = time.time()
-#dates = "20170913"
+#dates = "20170923"
 
-zipfile_name = ''.join([dates, '.zip'])
+#zipfile_name = ''.join([dates, '.zip'])
 
 text_files = "%s.TXT" % dates
 
@@ -86,6 +86,7 @@ for budo_com in sftp.listdir():
 ssh.close()
 
 #################################### Zip the Folder #####################################		
+'''
 myZipFile = zipfile.ZipFile(zipfile_name, mode='w', allowZip64=True) 
 
 for root, dirs, files in os.walk(dates):
@@ -94,28 +95,39 @@ for root, dirs, files in os.walk(dates):
 
 myZipFile.close()
 ssh.close()
-
+'''
 #################################### Dump files on the server  #####################################
+
+os.chdir(dates) # "dates" is dir where position files reside 
+
 # Reference http://effbot.org/librarybook/ftplib.htm
-
-
 
 ftp = FTP(query_server_ip)
 ftp.login(user=query_username, passwd=query_password)
 
-upload(ftp, zipfile_name)
+if dates not in ftp.nlst():
+	ftp.mkd(dates)
+
+ftp.cwd(dates) # have dir on FTP site ready
+
+for position_filename in os.listdir('.'):
+	upload(ftp, position_filename)
+	print "%s has been uploaded!" % position_filename 
+
+#upload(ftp, zipfile_name)
 #upload(ftp, "dumper.py")
 
 ftp.close()
-print "file has been transferred"
+print "--- All file has been transferred ---"
 
 
 #################################### Remove files once transfer is complete  #####################################
 
 try:
-    shutil.rmtree(dates)
-    os.remove(zipfile_name)
+	os.chdir("..")
+	shutil.rmtree(dates)
+	#os.remove(zipfile_name) #Once the script is stable, this line will be removed 
 except Exception as e:
-    print(e)
-    raise
+	print(e)
+	raise
 print "local copies have been removed.."
